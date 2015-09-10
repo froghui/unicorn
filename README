@@ -1,0 +1,9 @@
+Unicorn is a mini linux container based on namespace and cgroup.
+
+How to try:
+
+1. make 
+
+2. sudo ./unicorn
+
+
