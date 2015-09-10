@@ -6,6 +6,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <assert.h>
 
 #include "util.h"
 #include "cgroup.h"
@@ -21,7 +22,6 @@ char* const child_args[] = {
 
 
 char * const rootfs_base="/tmp/rootfs";
-char * const cgroup_base="/tmp/cgroup";
 char * const mount_base="/tmp/unicorn";
 char * const pivot_old=".pivot_old";
 
@@ -35,7 +35,7 @@ int child_main(void* arg)
 
 	close(pipes[1]);   
 	
-	printf(" -[%5d] World ! %s \n", getpid(), unicorn_id);
+	printf(" child pid from cloned child process:: [%5d] %s \n", getpid(), unicorn_id);
 
 	pivot_move(mount_base, unicorn_id);
 
@@ -51,20 +51,29 @@ int child_main(void* arg)
 
 int main()
 {
-	cgroup_init(cgroup_base);
+	cgroup_init();
 	mount_init(mount_base);
         
 	pipe(pipes);
 
-	printf(" -[%5d] Hello ?\n",getpid());
+	printf(" parent pid:: [%5d] \n",getpid());
 
 	char * unicorn_id = malloc(11);
     random_string(unicorn_id, 10);
 	prepare_mount(mount_base, unicorn_id, rootfs_base);
 
-	int child_pid = clone(child_main, child_stack+STACK_SIZE, CLONE_NEWIPC | CLONE_NEWUTS | CLONE_NEWPID | CLONE_NEWNS | SIGCHLD, unicorn_id);
-	cgroup_add(child_pid);
+	int child_pid = clone(child_main, child_stack+STACK_SIZE, CLONE_NEWIPC | CLONE_NEWUTS | CLONE_NEWPID | CLONE_NEWNS | CLONE_NEWNET | SIGCHLD, unicorn_id);
 
+	
+	unicorn_t *u = calloc(1, sizeof(unicorn_t));;
+    assert(u != NULL);
+    u->child_pid = child_pid;
+    u->parent_pid = getpid();
+    u->unicorn_id = unicorn_id;
+
+	cgroup_add(u);
+
+	printf(" child pid from parent:: [%5d] \n",child_pid);
 	sleep(1);
 	close(pipes[1]);
 	waitpid(child_pid, NULL, 0);

@@ -2,6 +2,14 @@
 #define UTIL_H
 
 
+typedef struct unicorn_s unicorn_t;
+struct unicorn_s
+{
+	int parent_pid;
+	int child_pid;
+	char * unicorn_id;
+};
+
 void random_string(char * string, unsigned length);
 
 #include <stdlib.h>
@@ -20,10 +28,8 @@ int errCode;
 #define check_mkdir(value, message) \
 result = value; \
 errCode = errno; \
-if(errCode == EEXIST || result==0 ){ \
-	                 \
-}else{ \
-	printf("%s get error: %d %s \n", message, result,  strerror(errCode)); \
+if(result < 0 && errCode != EEXIST){ \
+	printf("%s get error return %d and msg is %s \n", message, result,  strerror(errCode)); \
 	exit(errCode); \
 } \
 

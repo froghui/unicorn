@@ -18,25 +18,21 @@ int mount_init(char * mount_base){
     return 0;
 }
 
-int prepare_mount(char * mount_base, char * unicorn_id, char * rootfs_base){
-	
+int prepare_mount(char * mount_base, char * unicorn_id, char * rootfs_base){	
     //use aufs to create union target rootfs
     char rootfs_path[100];
     check_result(sprintf(rootfs_path,"%s/%s",mount_base,unicorn_id), rootfs_path);
     check_mkdir(mkdir(rootfs_path, 0755), "mkdir root");
     check_result(sprintf(rootfs_path,"%s/rootfs",rootfs_path), rootfs_path);
     check_mkdir(mkdir(rootfs_path,0755), "mkdir rootfs");
- 
-	
 
     char mount_copy_on_write_dst[100];
     check_result(sprintf(mount_copy_on_write_dst,"%s/%s-init",mount_base,unicorn_id),mount_copy_on_write_dst);
     check_mkdir(mkdir(mount_copy_on_write_dst,0755),"mkdir copy_on_write dir");
 
     // mount -n -t aufs -o br:$mount_copy_on_write_dst=rw:$rootfs_base=ro+wh none rootfs_path
-
     char mount_data[100];
-    check_result(sprintf(mount_data,"br:%s=rw:%s=ro+wh",rootfs_base,mount_copy_on_write_dst), mount_data);
+    check_result(sprintf(mount_data,"br:%s=rw:%s=ro+wh",mount_copy_on_write_dst, rootfs_base), mount_data);
     printf("rootfs_path:: %s mount_opt:: %s \n", rootfs_path, mount_data);
     check_result(mount("none",rootfs_path,"aufs",0, mount_data),"mount rootfs_base to rootfs dir");
 
@@ -57,11 +53,20 @@ int pivot_move(char * mount_base, char * unicorn_id){
     printf("rootfs::%s pivot_old::%s \n", rootfs_path, pivot_old_dir);
     check_result(pivot_root(".", ".pivot_old"),"pivot_root");  
     check_result(chdir("/"),"chdir to /");
- 
+    check_result(umount2("/.pivot_old",MNT_DETACH), "umount /.pivot_old");
+    check_result(rmdir(".pivot_old"),"remove .pivot_old");
+
+    // mkdir -p /dev/pts
+    //mount -t devpts -o newinstance,ptmxmode=0666 devpts /dev/pts
+    //ln -sf pts/ptmx /dev/ptmx 
+    check_mkdir(mkdir("/dev",0755),"mkdir /dev");
+    check_mkdir(mkdir("/dev/pts",0755),"mkdir /dev/pts");
+    check_result(mount("devpts","/dev/pts","devpts",0, "newinstance,ptmxmode=0666"),"mount /dev/pts");
+    check_result(symlink("pts/ptmx","/dev/ptmx"),"ln -sf pts/ptmx /dev/ptmx ");
 
     //mkdir -p /dev/shm
     //mount -t tmpfs tmpfs /dev/shm
-    check_mkdir(mkdir("/dev",0755),"mkdir /dev");
+    //system("mkdir -p /dev/shm");
     check_mkdir(mkdir("/dev/shm",0755),"mkdir /dev/shm");
     check_result(mount("tmpfs","/dev/shm","tmpfs",0, NULL),"mount /dev/shm");
 
@@ -69,6 +74,7 @@ int pivot_move(char * mount_base, char * unicorn_id){
 	check_mkdir(mkdir("/proc",0755),"mkdir /proc");
     check_result(mount("none","/proc","proc",0, NULL),"mount /proc");
 
+    //export PS1="root@@\h:\w\$"
 
     return 0;
 }
