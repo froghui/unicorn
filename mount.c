@@ -33,7 +33,7 @@ int prepare_mount(char * mount_base, char * unicorn_id, char * rootfs_base){
     // mount -n -t aufs -o br:$mount_copy_on_write_dst=rw:$rootfs_base=ro+wh none rootfs_path
     char mount_data[100];
     check_result(sprintf(mount_data,"br:%s=rw:%s=ro+wh",mount_copy_on_write_dst, rootfs_base), mount_data);
-    printf("rootfs_path:: %s mount_opt:: %s \n", rootfs_path, mount_data);
+    //printf("rootfs_path:: %s mount_opt:: %s \n", rootfs_path, mount_data);
     check_result(mount("none",rootfs_path,"aufs",0, mount_data),"mount rootfs_base to rootfs dir");
 
     return 0;
@@ -50,7 +50,7 @@ int pivot_move(char * mount_base, char * unicorn_id){
     check_result(sprintf(pivot_old_dir,"%s/%s",rootfs_path,".pivot_old"),pivot_old_dir);
     check_mkdir(mkdir(pivot_old_dir,0755),"mkdir .pivot_old");
     check_result(chdir(rootfs_path),"chdir to rootfs_path");
-    printf("rootfs::%s pivot_old::%s \n", rootfs_path, pivot_old_dir);
+    //printf("rootfs::%s pivot_old::%s \n", rootfs_path, pivot_old_dir);
     check_result(pivot_root(".", ".pivot_old"),"pivot_root");  
     check_result(chdir("/"),"chdir to /");
     check_result(umount2("/.pivot_old",MNT_DETACH), "umount /.pivot_old");

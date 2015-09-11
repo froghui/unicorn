@@ -1,6 +1,6 @@
 OPTIMIZATION?=-O0
 DEBUG?=-g -ggdb -rdynamic
-OBJS=unicorn.o mount.o util.o cgroup.o
+OBJS=unicorn.o mount.o util.o cgroup.o net.o
 CC=gcc
 
 all: unicorn

@@ -10,6 +10,17 @@ struct unicorn_s
 	char * unicorn_id;
 };
 
+typedef struct net_s net_t;
+struct net_s
+{
+	char * unicorn_id;
+	char * ip;
+	char * netmask;
+	int mtu;
+	char * gateway;
+	char * hostname;
+};
+
 void random_string(char * string, unsigned length);
 
 #include <stdlib.h>

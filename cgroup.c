@@ -23,6 +23,10 @@ int cgroup_init(){
 		check_result(sprintf(cmd, "mkdir -p %s/%s", cgroup_base_dir, cgroup_subsystems[i]), cmd);
 		check_result(system(cmd), "system call mkdir ");
 
+        //TODO: parse /etc/mtab to mount cgroup if has not bee inited yet
+		check_result(sprintf(cmd, "umount %s/%s", cgroup_base_dir, cgroup_subsystems[i]), cmd);
+		check_result(system(cmd), "system call umount ");
+
 	    check_result(sprintf(cmd, "mount -t cgroup %s -o %s %s/%s", cgroup_subsystems[i], cgroup_subsystems[i], cgroup_base_dir, cgroup_subsystems[i]), cmd);
 	    check_result(system(cmd), "system call mount ");
     }
