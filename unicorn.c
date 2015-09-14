@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <assert.h>
+#include <stdlib.h>
+#include <getopt.h>
+#include <string.h>
 
 #include "util.h"
 #include "cgroup.h"
@@ -48,8 +51,75 @@ int child_main(void* arg)
 	return 1;
 }
 
-int main()
+void print_usage(char * cmd) {
+    printf("Usage: %s  \n", cmd);
+    printf("[--ip] ip : set the container ip \n");
+    printf("[--mask] mask : set the conatiner maek \n");
+    printf("[--gateway] gateway: set the container gateway \n");
+}
+
+int main(int argc, char * argv[])
 {
+
+ char * ip = NULL;
+ char * mask = NULL;
+ char * gw = NULL;
+ int c;
+
+  while (1)
+    {
+      static struct option long_options[] =
+        {
+          {"help",    no_argument,       0, 'h'},
+          {"ip",      required_argument, 0, 'i'},
+          {"mask",    required_argument, 0, 'm'},
+          {"gateway", required_argument, 0, 'g'},
+        };
+
+      int option_index = 0;
+      c = getopt_long(argc, argv, "hi:m:g:",
+                       long_options, &option_index);
+
+      /* Detect the end of the options. */
+      if (c == -1)
+        break;
+
+      switch (c)
+        {
+        case 'h':
+     	  print_usage(argv[0]);
+          exit(EXIT_FAILURE);
+ 
+        case 'i':
+          ip = malloc(strlen(optarg));
+          strncpy(ip, optarg, strlen(optarg));
+          break;
+
+        case 'm':
+          mask = malloc(strlen(optarg));
+          strncpy(mask, optarg, strlen(optarg));
+          break;
+
+        case 'g':
+          gw = malloc(strlen(optarg));
+          strncpy(gw, optarg, strlen(optarg));
+          break;
+
+        case '?':
+          break;
+
+        default:
+          print_usage(argv[0]);
+          exit(EXIT_FAILURE);
+        }
+    }
+
+
+ 	if (ip == NULL || mask == NULL || gw == NULL) {
+        print_usage(argv[0]);
+        exit(EXIT_FAILURE);
+    }
+    printf("ip is %s, mask is %s, gateway is %s \n", ip, mask, gw);
 	cgroup_init();
 	mount_init(mount_base);
         
@@ -68,9 +138,9 @@ int main()
     sprintf(hostname,"unicorn-%s",unicorn_id);
     n->hostname = hostname;
     n->mtu=1500;
-    n->ip="192.168.3.223";
-    n->netmask="255.255.255.0";
-    n->gateway="192.168.3.1";
+    n->ip=ip;
+    n->netmask=mask;
+    n->gateway=gw;
 
     //prepare auts and then clone
     prepare_mount(mount_base, unicorn_id, rootfs_base);
