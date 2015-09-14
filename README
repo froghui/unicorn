@@ -1,5 +1,10 @@
 Unicorn is a mini linux container based on namespace and cgroup.
 
+Prerequisite:
+  Ubuntu and aufs 
+
+  brige-utils and create a br0 briage: brctl addbr br0
+
 How to try:
 
 1. make 
