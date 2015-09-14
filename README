@@ -3,7 +3,7 @@ Unicorn is a mini linux container based on namespace and cgroup.
 Prerequisite:
   Ubuntu and aufs 
 
-  brige-utils and create a br0 briage: brctl addbr br0
+  bridge-utils (apt-get install bridge-utils) and create a br0 bridge: brctl addbr br0
 
 How to try:
 
