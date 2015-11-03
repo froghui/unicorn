@@ -6,7 +6,7 @@ CC=gcc
 all: unicorn
 
 init: 
-	bash rootfs_base.sh && bash bridge.sh
+	bash rootfs_base.sh && bash bridge.sh  && bash cgroup.sh
 
 clean:
 	rm -f *.o unicorn

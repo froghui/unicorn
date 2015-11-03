@@ -12,28 +12,11 @@
 #include "util.h"
 
 
-char * const cgroup_base_dir="/tmp/unicorn/cgroup";
+char * const cgroup_base_dir="/tmp/cgroup";
 char* cgroup_subsystems[] = {"cpu", "cpuset", "cpuacct", "memory", "blkio"};
 int cgroup_subsystems_lengh = 5;
 
-int cgroup_init(){
-    int i;
-    for (i=0; i< cgroup_subsystems_lengh; i++){
-    	char cmd[100];
-		check_result(sprintf(cmd, "mkdir -p %s/%s", cgroup_base_dir, cgroup_subsystems[i]), cmd);
-		check_result(system(cmd), "system call mkdir ");
 
-        //TODO: parse /etc/mtab to mount cgroup if has not bee inited yet
-		check_result(sprintf(cmd, "umount %s/%s", cgroup_base_dir, cgroup_subsystems[i]), cmd);
-		check_result(system(cmd), "system call umount ");
-
-	    check_result(sprintf(cmd, "mount -t cgroup %s -o %s %s/%s", cgroup_subsystems[i], cgroup_subsystems[i], cgroup_base_dir, cgroup_subsystems[i]), cmd);
-	    check_result(system(cmd), "system call mount ");
-    }
-
-
-	return 0;
-}
 
 int cgroup_add(unicorn_t * u){
 	int i;

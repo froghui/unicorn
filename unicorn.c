@@ -25,7 +25,7 @@ char* const child_args[] = {
 };
 
 
-char * const rootfs_base="/tmp/rootfs";
+char * const rootfs_base="/tmp/rootfs_base";
 char * const mount_base="/tmp/unicorn";
 char * const pivot_old=".pivot_old";
 
@@ -120,7 +120,6 @@ int main(int argc, char * argv[])
         exit(EXIT_FAILURE);
     }
     printf("ip is %s, mask is %s, gateway is %s \n", ip, mask, gw);
-	cgroup_init();
 	mount_init(mount_base);
         
 	pipe(pipes);

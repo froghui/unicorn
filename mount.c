@@ -33,7 +33,7 @@ int prepare_mount(char * mount_base, char * unicorn_id, char * rootfs_base){
     // mount -n -t aufs -o br:$mount_copy_on_write_dst=rw:$rootfs_base=ro+wh none rootfs_path
     char mount_data[100];
     check_result(sprintf(mount_data,"br:%s=rw:%s=ro+wh",mount_copy_on_write_dst, rootfs_base), mount_data);
-    //printf("rootfs_path:: %s mount_opt:: %s \n", rootfs_path, mount_data);
+    printf("rootfs_path:: %s mount_opt:: %s \n", rootfs_path, mount_data);
     check_result(mount("none",rootfs_path,"aufs",0, mount_data),"mount rootfs_base to rootfs dir");
 
     return 0;
