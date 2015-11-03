@@ -1,14 +1,19 @@
-Unicorn is a mini linux container based on namespace and cgroup.
+Unicorn is a mini linux container based on linux namespace and cgroup.
+Unicorn can ONLY support Ubuntu now
 
-Prerequisite:
-  Ubuntu and aufs 
-
-  bridge-utils (apt-get install bridge-utils) and create a br0 bridge: brctl addbr br0
 
 How to try:
 
-1. make 
+1. modify bridge.sh to use your NIC and IP properly.
 
-2. sudo ./unicorn
+2. make init.
+Note this will continue for a while, because it will do the following things:
+a)install debootstrap and make a rootfs_base from ubuntu site
+b)install bridge-utils and setup br0
+c)setup cgroup
+
+3. make all.
+
+4. sudo ./unicorn --ip 192.168.3.102 --gateway 192.168.3.1 --mask 255.255.255.0 
 
 
