@@ -4,7 +4,9 @@ OBJS=unicorn.o mount.o util.o cgroup.o net.o
 CC=gcc
 
 all: unicorn
-	sudo mkdir -p /tmp/rootfs && sudo cp -r rootfs_base/* /tmp/rootfs
+
+init: 
+	bash rootfs_base.sh && bash bridge.sh
 
 clean:
 	rm -f *.o unicorn

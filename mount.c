@@ -70,9 +70,13 @@ int pivot_move(char * mount_base, char * unicorn_id){
     check_mkdir(mkdir("/dev/shm",0755),"mkdir /dev/shm");
     check_result(mount("tmpfs","/dev/shm","tmpfs",0, NULL),"mount /dev/shm");
 
-    //for top tool: mount -t proc none /proc
+    //for top tool: mount -t proc proc /proc
 	check_mkdir(mkdir("/proc",0755),"mkdir /proc");
-    check_result(mount("none","/proc","proc",0, NULL),"mount /proc");
+    check_result(mount("proc","/proc","proc",0, NULL),"mount /proc");
+
+	//for device data: mount -t proc proc /proc
+    check_mkdir(mkdir("/sys",0755),"mkdir /sys");
+    check_result(mount("sysfs","/sys","sysfs",0, NULL),"mount /sys");
 
     //export PS1="root@@\h:\w\$"
 
